@@ -4,18 +4,8 @@ using UnityEngine;
 
 public class Crystal : Collectable {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
 	protected override void OnRabitHit(HeroRabit rabit) {
-		LevelController.current.AddCrystals (1);
+		LevelController.current.AddCrystals (this.tag, 1);
 		CollectedHide ();
 	}
 }

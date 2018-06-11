@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db40f5db4616f7347a84ff050ff6ff63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickedClip: {fileID: 8300000, guid: cd46aa2d6e78249dd8df3f3b948d168a, type: 3}
 --- !u!212 &212662352329992166
 SpriteRenderer:
   m_ObjectHideFlags: 1

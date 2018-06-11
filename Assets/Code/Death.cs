@@ -17,7 +17,8 @@ public class Death : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D collider) {
 		HeroRabit rabit = collider.GetComponent<HeroRabit> ();
 		if (rabit != null) {
-			LevelController.current.OnRabitDeath (rabit);
+            rabit.PlayDeathSound();
+            LevelController.current.OnRabitDeath (rabit);
 		}
 	}
 }

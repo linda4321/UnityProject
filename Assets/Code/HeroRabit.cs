@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class HeroRabit : MonoBehaviour {
 
-	public float speed = 1;
+    public static HeroRabit lastRabit = null;
+
+    public float speed = 1;
 	public float jumpSpeed = 1f;
 	public float jumpTime = 1f;
 
 	public float defenselessTime = 4f;
+
+    public AudioClip walk;
+    public AudioClip jump;
+    public AudioClip death;
 
 	private bool isGrounded = false;
 	private bool isJumping = false;
@@ -27,19 +33,42 @@ public class HeroRabit : MonoBehaviour {
     private Color bonusColor;
     private Color defaultSpriteColor;
 
+    private int lifes = 3;
+
 	public bool IsDefenseless {get {return isDefenseless; } }
 	public bool HasDefaultSize { get { return hasDefaultSize; } }
 
-	// Use this for initialization
-	void Start () {
+    public bool IsGrounded { get { return isGrounded; } }
+
+    public int Lifes { get { return lifes; } }
+
+    private AudioSource walkSource;
+    private AudioSource deathSource;
+    private AudioSource jumpSource;
+
+    void Awake()
+    {
+        lastRabit = this;
+    }
+
+    // Use this for initialization
+    void Start () {
 		rabitBody = this.GetComponent<Rigidbody2D> ();
 		rabitSprite = this.GetComponent<SpriteRenderer> ();
 		rabitAnim = this.GetComponent<Animator> ();
 
-		LevelController.current.setStartPosition (this.transform.position);
+        walkSource = gameObject.AddComponent<AudioSource>();
+        walkSource.clip = walk;
+
+        deathSource = gameObject.AddComponent<AudioSource>();
+        deathSource.clip = death;
+
+        jumpSource = gameObject.AddComponent<AudioSource>();
+        jumpSource.clip = jump;
+
+        LevelController.current.SetStartPosition (this.transform.position);
 		parent = this.transform.parent;
-   
-		bombTimer = defenselessTime;
+        bombTimer = defenselessTime;
         bonusColor = new Color(1f, 0.75f, 0.85f, 255f);
         defaultSpriteColor = rabitSprite.color;
     }
@@ -75,11 +104,12 @@ public class HeroRabit : MonoBehaviour {
 
 		if (Mathf.Abs (value) > 0) {
 			rabitAnim.SetBool ("run", true);
-		} else {
+        } else {
 			rabitAnim.SetBool ("run", false);
-		}
+        }
 
-		Vector3 fromVect = this.transform.position + Vector3.up * 0.3f;
+
+        Vector3 fromVect = this.transform.position + Vector3.up * 0.3f;
 		Vector3 toVect = this.transform.position + Vector3.down * 0.1f;
 
 		int layerId = 1 << LayerMask.NameToLayer ("Ground");
@@ -87,13 +117,16 @@ public class HeroRabit : MonoBehaviour {
 
 		if (hit) {
 			isGrounded = true;
-			if (hit.transform != null && hit.transform.GetComponent<MovingPlatform> () != null) {
+            if (hit.collider != null && hit.collider.gameObject.tag == "Ground") {
 				SetNewParent (this.transform, hit.transform);
+               
 			}
 		} else {
 			isGrounded = false;
-			SetNewParent(this.transform, parent);
-		}
+            SetNewParent(this.transform, parent);
+            if (SoundManager.Instance.IsSoundOn())
+                jumpSource.Play();
+        }
 
 		if (Input.GetButtonDown ("Jump") && isGrounded)
 			this.isJumping = true;
@@ -113,10 +146,33 @@ public class HeroRabit : MonoBehaviour {
 		}
 
 		if (isGrounded)
-			rabitAnim.SetBool ("jump", false);
-		else
-			rabitAnim.SetBool ("jump", true);
-	}
+        {
+            rabitAnim.SetBool("jump", false);
+        }
+        else
+        {
+            rabitAnim.SetBool("jump", true);
+        }
+
+        if (rabitBody.velocity.x != 0 && isGrounded)
+        {
+            if (SoundManager.Instance.IsSoundOn() && !walkSource.isPlaying)
+                walkSource.Play();
+        }    
+        else
+            walkSource.Stop();
+    }
+
+    public void PlayDeathSound()
+    {
+        if (SoundManager.Instance.IsSoundOn())
+            deathSource.Play();
+    }
+
+    public void Jump()
+    {
+        rabitBody.AddForce(Vector2.up * 3f, ForceMode2D.Impulse);
+    }
 
 	public void Enlarge(float factor) {
 		this.transform.localScale = new Vector3 (factor, factor, factor);
@@ -129,17 +185,38 @@ public class HeroRabit : MonoBehaviour {
 		isDefenseless = false;
 	}
 
-	public void Die(){
-		rabitAnim.SetBool ("dead", true);
-		StartCoroutine (WaitForDeathAnim ());
-	}
+    public void MinusLife()
+    {
+        if (lifes > 0)
+            lifes--;
+    }
+
+    public void PlusLife()
+    {
+        if (lifes < 3)
+            lifes++;
+    }
+
+    public void Stop()
+    {
+        rabitAnim.SetBool("run", false);
+        walkSource.Stop();
+        Vector2 velocity = rabitBody.velocity;
+        velocity.x = 0;
+        rabitBody.velocity = velocity;
+    }
+
+    public void Die()
+    {
+        PlayDeathSound();
+        rabitAnim.SetTrigger("dead");
+        StartCoroutine(WaitForDeathAnim());
+    }
 
 	IEnumerator WaitForDeathAnim()
 	{
-		yield return new WaitForSeconds(rabitAnim.GetCurrentAnimatorStateInfo(0).length);
-		rabitAnim.SetBool ("dead", false);
+		yield return new WaitForSeconds(rabitAnim.GetCurrentAnimatorStateInfo(0).length/rabitAnim.GetCurrentAnimatorStateInfo(0).speed);
 		LevelController.current.OnRabitDeath (this);
-		Debug.Log ("Death anim");
 	}
 
 	static void SetNewParent(Transform obj, Transform new_parent){

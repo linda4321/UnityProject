@@ -120,6 +120,10 @@ MonoBehaviour:
   speed: 2
   jumpSpeed: 2
   jumpTime: 2
+  defenselessTime: 4
+  walk: {fileID: 8300000, guid: 0d024189a711c440997b2d9f341c8dd0, type: 3}
+  jump: {fileID: 8300000, guid: 4678dc960a2b949329a55d696cf4ec68, type: 3}
+  death: {fileID: 8300000, guid: 7553580dee44e4f96b2efa5f4e5e17c3, type: 3}
 --- !u!212 &212427010182188080
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -151,7 +155,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 11
+  m_SortingOrder: 12
   m_Sprite: {fileID: 21300000, guid: 32fb16d5004e34a858807d4f975419f9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

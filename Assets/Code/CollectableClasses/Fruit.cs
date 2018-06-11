@@ -4,18 +4,12 @@ using UnityEngine;
 
 public class Fruit : Collectable {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private bool isCollected;
+
+    public bool IsCollected { get { return isCollected; } set { isCollected = value; } }
 
 	protected override void OnRabitHit(HeroRabit rabit) {
-		LevelController.current.AddFruits (1);
+		LevelController.current.AddFruits (1, transform.position);
 		CollectedHide ();
 	}
 }

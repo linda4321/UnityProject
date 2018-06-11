@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class Coin : Collectable {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
 	protected override void OnRabitHit(HeroRabit rabit) {
 		LevelController.current.AddCoins (1);
 		CollectedHide ();

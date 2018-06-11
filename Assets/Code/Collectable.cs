@@ -2,33 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Collectable : MonoBehaviour {
+public class Collectable : MonoBehaviour
+{ 
+    public AudioClip pickedClip;
+    
+    // Use this for initialization
+    void Start()
+    {
+     
+    }
 
-//	private bool hideAnimation = false;
+    // Update is called once per frame
+    void Update()
+    {
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        HeroRabit rabit = collider.GetComponent<HeroRabit>();
+        if (rabit != null)
+        {
+            if (SoundManager.Instance.IsSoundOn())
+                Music.music.PlayCLip(pickedClip);
+            this.OnRabitHit(rabit);
+        }
+    }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void CollectedHide()
+    {
+        Destroy(this.gameObject);
+    }
 
-	void OnTriggerEnter2D(Collider2D collider) {
-	//	if(!this.hideAnimation) {
-			HeroRabit rabit = collider.GetComponent<HeroRabit>();
-			if(rabit != null) {
-				this.OnRabitHit (rabit);
-			}
-//		}
-	}
-
-	public void CollectedHide() {
-		Destroy(this.gameObject);
-	}
-
-	protected virtual void OnRabitHit(HeroRabit rabit) {
-	}
+    protected virtual void OnRabitHit(HeroRabit rabit)
+    {
+    }
 }
