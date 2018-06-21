@@ -80,6 +80,7 @@ public class LevelController : MonoBehaviour {
         }
     }
 
+
     public void OnPlayerLose()
     {
         if (SoundManager.Instance.IsSoundOn())
@@ -168,5 +169,10 @@ public class LevelController : MonoBehaviour {
 		this.bombs += bombs;
 		Debug.Log ("Bomb added");
 	}
+
+    public void AddLife(int lifes)
+    {
+        lifePanel.PlusLife(lifes);
+    }
 
 }

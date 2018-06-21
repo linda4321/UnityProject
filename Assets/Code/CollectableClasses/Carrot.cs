@@ -9,7 +9,7 @@ public class Carrot : Collectable {
  //   private Transform destination;
     private float direction;
     private bool _isFlying = false;
-    private float speed = 2;
+    private float speed = 2.5f;
 
     // Use this for initialization
     void Start () {
